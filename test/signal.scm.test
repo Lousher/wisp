@@ -1,0 +1,31 @@
+(use-modules (srfi srfi-64)
+	     (srfi srfi-15)
+	     (signal))
+
+(test-begin "signal system")
+
+(test-group "signal value ref & set"
+  (let ([sig (signal-init 0)])
+    (test-eqv 0 (signal-ref sig))
+    (signal-set! sig 1)
+    (test-eqv 1 (signal-ref sig))))
+
+(test-group "signal set trigger effect"
+  (let ([sig (signal-init 0)]
+	[effect-triggered-times 0])
+    (let ([temp-effect (lambda (input)
+			   (set! effect-triggered-times (+ effect-triggered-times 1)))])
+      (signal-effect (lambda () (temp-effect (format #f "Now sig is ~a" (signal-ref sig)))))
+      (signal-set! sig 10))
+    (test-eqv 10 (signal-ref sig))
+    ;; effect will execute once when firstly set!
+    (test-eqv 2 effect-triggered-times)))
+
+(test-group "signal computed will calculate outcome correctly"
+  (let* ([sig (signal-init 0)]
+	[sig-com (signal-computed (lambda () (* 2 (signal-ref sig))))])
+    (test-eqv 0 (signal-ref sig-com))
+    (signal-set! sig 10)
+    (test-eqv 20 (signal-ref sig-com))))
+
+(test-end "signal system")

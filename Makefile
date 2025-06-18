@@ -7,5 +7,7 @@ build:
 	@echo "A Place Holder"
 
 test:
-	@guile -L $(MODULES) -s $(TESTS)
+	@for test_file in $(TESTS); do \
+		guile --r6rs -L $(MODULES) -s $$test_file; \
+	done;
 	@mv *.log test/log/

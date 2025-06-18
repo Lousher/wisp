@@ -1,0 +1,58 @@
+%%%% Starting test signal system
+Group begin: signal system
+Group begin: signal value ref & set
+Test begin:
+  source-file: "/Users/song.lin/Desktop/MiracleBegin/Fun/wisp/test/signal.scm.test"
+  source-line: 9
+  source-form: (test-eqv 0 (signal-ref sig))
+Test end:
+  result-kind: pass
+  actual-value: 0
+  expected-value: 0
+Test begin:
+  source-file: "/Users/song.lin/Desktop/MiracleBegin/Fun/wisp/test/signal.scm.test"
+  source-line: 11
+  source-form: (test-eqv 1 (signal-ref sig))
+Test end:
+  result-kind: pass
+  actual-value: 1
+  expected-value: 1
+Group end: signal value ref & set
+Group begin: signal set trigger effect
+Test begin:
+  source-file: "/Users/song.lin/Desktop/MiracleBegin/Fun/wisp/test/signal.scm.test"
+  source-line: 20
+  source-form: (test-eqv 10 (signal-ref sig))
+Test end:
+  result-kind: pass
+  actual-value: 10
+  expected-value: 10
+Test begin:
+  source-file: "/Users/song.lin/Desktop/MiracleBegin/Fun/wisp/test/signal.scm.test"
+  source-line: 22
+  source-form: (test-eqv 2 effect-triggered-times)
+Test end:
+  result-kind: pass
+  actual-value: 2
+  expected-value: 2
+Group end: signal set trigger effect
+Group begin: signal computed will calculate outcome correctly
+Test begin:
+  source-file: "/Users/song.lin/Desktop/MiracleBegin/Fun/wisp/test/signal.scm.test"
+  source-line: 27
+  source-form: (test-eqv 0 (signal-ref sig-com))
+Test end:
+  result-kind: pass
+  actual-value: 0
+  expected-value: 0
+Test begin:
+  source-file: "/Users/song.lin/Desktop/MiracleBegin/Fun/wisp/test/signal.scm.test"
+  source-line: 29
+  source-form: (test-eqv 20 (signal-ref sig-com))
+Test end:
+  result-kind: pass
+  actual-value: 20
+  expected-value: 20
+Group end: signal computed will calculate outcome correctly
+Group end: signal system
+# of expected passes      6
