@@ -1,0 +1,13 @@
+(define-module (App)
+  #:export (App)
+  #:use-module (htmlprag))
+
+(define App
+  (lambda args
+    (shtml->html (apply app args))))
+
+(define app
+  (lambda ()
+    `((h2 "Hello Interesting Wisp World!")
+      (h2 "Another H2 Header For Testing"))))
+ 

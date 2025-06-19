@@ -1,5 +1,5 @@
 window.addEventListener('load', function () {
-  Scheme.load_main("placeholder.wasm", {
+  Scheme.load_main("main.wasm", {
     user_imports: {
       document: {
 	body() { return document.body; },
