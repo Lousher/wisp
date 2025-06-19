@@ -1,13 +1,17 @@
-(define-module (wisp compile)
+#!/usr/local/bin/guile -s
+!#
+#|(define-module (wisp compile)
   #:use-module (ice-9 pretty-print)
   #:use-module (ice-9 textual-ports)
-  #:export (wisp-file->wish-file))
+  #:export (wisp-file->wish-file)) |#
+
+(use-modules (ice-9 pretty-print)
+	     (ice-9 textual-ports))
 
 (define export-module-syntax
   (lambda (name)
     `(define-module (,name)
        #:export (,name)
-       #:use-module (dom)
        #:use-module (htmlprag))))
 
 (define read-syntaxs
@@ -34,7 +38,8 @@
 (define wisp-syntax->wish-syntax
   (lambda (wisp-syntax)
     (syntax-case wisp-syntax ()
-      [(define-component name (lambda () (exp ...))) #'(define )]
+      [(define-component name (lambda () `(exp ...)))
+       #'(define name (lambda () (shtml->html `(exp ...))))]
       [(exp ...) #'(exp ...)])))
 
 (define wisp-file->wish-file
@@ -48,6 +53,9 @@
 	    (syntax->datum
 	     (wisp-syntax->wish-syntax wisp-syntax)) port))
 	 (call-with-input-file wisp-file-name read-syntaxs))))))
+
+(let ([wisp-files (cdr (command-line))])
+  (for-each wisp-file->wish-file wisp-files))
 	 
 	
 

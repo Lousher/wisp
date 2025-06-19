@@ -10,6 +10,7 @@ MODULES := modules
 build:
 	@mkdir dist
 	@cp -r template/ dist/
+	@./wisp App.wisp
 	@cp App.wish dist/App.scm
 	@cp main.wish dist/main.wish
 	@$(COMPILER) -o $(DIST_DIR)$(WASM_TAR) $(DIST_DIR)$(WISH_SRC) -L $(MODULES) -L $(DIST_DIR)
@@ -22,6 +23,7 @@ test:
 	@mv *.log test/log/
 
 clean:
+	@rm App.wish
 	@rm -rf dist/
 
 run:
