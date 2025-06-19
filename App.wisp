@@ -1,5 +1,20 @@
+(import-component (Counter))
+
+(define count1 0)
+(define count2 100)
+
+(define-component count-with-ops
+  (lambda (c)
+    `(div
+      (button (^ (id "dec")) "Minus")
+      ,(Counter c)
+      (button (^ (id "inc")) "Plus"))))
+     
 (define-component App
   (lambda ()
-    `((h2 "Hello Wisp World! It's very useful for testing haha")
-      (h3 "It's a very small tool framework")
-      (h4 "That's lot's of fun!"))))
+    `(div (^ (id "container"))
+	 ,(count-with-ops count1)
+	 (br)
+	 ,(count-with-ops count2))))
+
+

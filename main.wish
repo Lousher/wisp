@@ -1,8 +1,0 @@
-(use-modules (App)
-	     ((dom) #:select (insert-adjacent-HTML
-			      get-element-by-id)))
-
-(insert-adjacent-HTML
- (get-element-by-id "app")
- "beforeEnd"
- (App))

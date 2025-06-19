@@ -1,0 +1,18 @@
+window.addEventListener('load', function () {
+  Scheme.load_main("main.wasm", {
+    user_imports: {
+      document: {
+	body() { return document.body; },
+	getElementById: Document.prototype.getElementById.bind(document),
+	querySelector: Document.prototype.querySelector.bind(document)
+      },
+      element: {
+	insertAdjacentHTML(e, type, html) { return e.insertAdjacentHTML(type, html); },
+	textContent: (e, str) => e.textContent = str,
+	addEventListener(e, name, f) { e.addEventListener(name,f); }
+      },
+      console: {
+	log: (e) => console.log(e)
+      }
+    }
+  })})

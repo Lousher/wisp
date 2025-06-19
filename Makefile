@@ -1,30 +1,30 @@
-.PHONY: clean test
+.PHONY: clean run all
 
-COMPILER := lima guild compile-wasm
-DIST_DIR := dist/
-WASM_TAR := main.wasm
-WISH_SRC := main.wish
-TESTS := $(wildcard test/*.scm.test)
-MODULES := modules
+DIST := dist
+WASM_MAIN := $(DIST)/main.wasm
+WISH_MAIN := $(DIST)/main.wish
 
-build:
-	@mkdir dist
+WISP_FILES := $(wildcard *.wisp)
+SCM_FILES := $(patsubst %.wisp, $(DIST)/%.scm, $(WISP_FILES))
+
+WISP_COMP := ./wisp
+WASM_COMP := lima guild compile-wasm
+
+all: $(WASM_MAIN)
+
+$(WASM_MAIN): $(SCM_FILES)
 	@cp -r template/ dist/
-	@./wisp App.wisp
-	@cp App.wish dist/App.scm
-	@cp main.wish dist/main.wish
-	@$(COMPILER) -o $(DIST_DIR)$(WASM_TAR) $(DIST_DIR)$(WISH_SRC) -L $(MODULES) -L $(DIST_DIR)
-	@rm dist/main.wish
+	$(WASM_COMP) -o $@ $(WISH_MAIN) -L modules -L dist
 
-test:
-	@for test_file in $(TESTS); do \
-		guile --r6rs -L $(MODULES) -s $$test_file; \
-	done;
-	@mv *.log test/log/
+$(DIST)/%.scm: %.wish
+	@mkdir -p $(@D)
+	mv $< $@
+
+%.wish: %.wisp
+	$(WISP_COMP) $<
 
 clean:
-	@rm App.wish
-	@rm -rf dist/
+	@rm -rf dist/ *.wish
 
 run:
-	@npx serve dist/
+	npx serve dist/

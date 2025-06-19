@@ -1,6 +1,11 @@
 (define-module (htmlprag)
-  #:export (shtml->html))
+  #:export (shtml->html
+	    any->string))
 
+(define any->string
+  (lambda (obj)
+    (if (string? obj) obj
+	(object->string obj))))
 (define-syntax begin0
     (syntax-rules ()
       ((_ form0 form1 ...)
