@@ -1,6 +1,16 @@
 (define-module (htmlprag)
   #:export (shtml->html
+	    shtml-normalize
 	    any->string))
+
+(define shtml-normalize
+  (lambda (node)
+    (cond
+     [(number? node) (number->string node)]
+     [(pair? node)
+      (cons (shtml-normalize (car node))
+	    (shtml-normalize (cdr node)))]
+     [else node])))
 
 (define any->string
   (lambda (obj)

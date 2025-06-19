@@ -1,23 +1,8 @@
-(define-module
- (App)
- #:export
- (App)
- #:use-module
- (htmlprag)
- #:use-module
- (Counter))
-(define count1 0)
-(define count2 100)
-(define count-with-ops
-  (lambda (t-1dff1b83541ce327-1)
-    (let ((c (any->string t-1dff1b83541ce327-1)))
-      `(div (button (^ (id "dec")) "Minus")
-            ,(Counter c)
-            (button (^ (id "inc")) "Plus")))))
+(define-module (App) #:export (App) #:use-module (htmlprag))
+(define count 0)
+(define increment (lambda () (set! count (+ count 1))))
 (define App
   (lambda ()
-    (let ()
-      `(div (^ (id "container"))
-            ,(count-with-ops count1)
-            (br)
-            ,(count-with-ops count2)))))
+    `(div (button (^ (id "dec")) "Minus")
+          (span ,count)
+          (button (^ (click "increment")) "Plus"))))

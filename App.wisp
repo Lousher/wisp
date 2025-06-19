@@ -1,20 +1,11 @@
-(import-component (Counter))
+(define count 0)
 
-(define count1 0)
-(define count2 100)
-
-(define-component count-with-ops
-  (lambda (c)
-    `(div
-      (button (^ (id "dec")) "Minus")
-      ,(Counter c)
-      (button (^ (id "inc")) "Plus"))))
-     
+(define increment
+  (lambda () (set! count (+ count 1))))
+    
 (define-component App
   (lambda ()
-    `(div (^ (id "container"))
-	 ,(count-with-ops count1)
-	 (br)
-	 ,(count-with-ops count2))))
-
-
+    `(div
+      (button (^ (id "dec")) "Minus")
+      (span ,count)
+      (button (^ (click "increment")) "Plus"))))

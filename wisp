@@ -48,11 +48,9 @@
   (lambda (wisp-syntax)
     (syntax-case wisp-syntax ()
       [(define-component name (lambda (args ...) `(exp ...)))
-       (with-syntax ([(tmp-args ...) (generate-temporaries #'(args ...))])
-	 #`(define name
-	     (lambda (tmp-args ...)
-	       (let ([args (any->string tmp-args)] ...)
-		 `(exp ...)))))]
+       #`(define name
+	   (lambda (args ...)
+	     `(exp ...)))]
       [(exp ...) #'(exp ...)])))
 
 (define wisp-file->wish-file
