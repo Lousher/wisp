@@ -44,13 +44,34 @@
     (if (string? obj) obj
 	(object->string obj))))
 
+(define @action-pair?
+  (lambda (li)
+    (and (pair? li)
+	 (= 2 (length li))
+	 (eqv? #\@ (string-ref (object->string (car li)) 0)))))
+
+(define find-@actions
+  (lambda (li)
+    (cond
+     [(@action-pair? li) (list li)]
+     [(pair? li)
+      (apply append
+	     (list
+	      (find-@actions (car li))
+	      (find-@actions (cdr li))))]
+     [else '()])))
+
 (define wisp-syntax->wish-syntax
   (lambda (wisp-syntax)
     (syntax-case wisp-syntax ()
       [(define-component name (lambda (args ...) `(exp ...)))
-       #`(define name
-	   (lambda (args ...)
-	     `(exp ...)))]
+       (let* ([exp-list (syntax->datum #'(exp ...))]
+	      [@actions (find-@actions exp-list)])
+	 #`(begin
+	     (define name
+	       (lambda (args ...)
+		 `(exp ...)))
+	     ))]
       [(exp ...) #'(exp ...)])))
 
 (define wisp-file->wish-file

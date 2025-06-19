@@ -6,6 +6,6 @@
 (define-component App
   (lambda ()
     `(div
-      (button (^ (id "dec")) "Minus")
+      (button (^ (@click ,increment)) "Minus")
       (span ,count)
-      (button (^ (click "increment")) "Plus"))))
+      (button (^ (@click ,increment)) "Plus"))))
