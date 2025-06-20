@@ -13,6 +13,7 @@
     `(define-module (,name)
        #:export (,name)
        #:use-module (dom)
+       #:use-module (signal)
        #:use-module (htmlprag))))
 
 (define read-syntaxs
@@ -76,38 +77,66 @@
       (list (string->symbol (string-append "data-at-" (substring (symbol->string @act-id) 1)))
 	    (symbol->string proc-name)))))
 
-(define substitute-@actions
+(define substitute-@actions-and-&signal
   (lambda (li)
     (cond
      [(@action-pair? li) (@action-pair->data-at-action li)]
+     [(&signal? li)
+      (let ([sig-name (substring (symbol->string li) 1)])
+	(list 'span (list '^ (list (string->symbol (string-append "data-amper-" sig-name))))
+	      (list 'unquote (list 'signal-ref (string->symbol sig-name)))))]
      [(pair? li)
-      (cons (substitute-@actions (car li))
-	    (substitute-@actions (cdr li)))]
+      (cons (substitute-@actions-and-&signal (car li))
+	    (substitute-@actions-and-&signal (cdr li)))]
      [else li])))
+
+(define &signal?
+  (lambda (li)
+    (and (symbol? li)
+	 (string-prefix? "&" (symbol->string li)))))
+
+(define find-&signals
+  (lambda (li)
+    (cond
+     [(&signal? li) (list (string->symbol (substring (symbol->string li) 1)))]
+     [(pair? li) (apply append (list (find-&signals (car li))
+				     (find-&signals (cdr li))))]
+     [else '()])))
 
 (define wisp-syntax->wish-syntax
   (lambda (wisp-syntax)
     (syntax-case wisp-syntax ()
       [(define-component name (lambda (args ...) `(exp ...)))
        (let* ([exp-list (syntax->datum #'(exp ...))]
-	      [exp-normalized-list (substitute-@actions exp-list)]
+	      [exp-normalized-list (substitute-@actions-and-&signal exp-list)]
+	      [&signals (find-&signals exp-list)]
 	      [@actions (find-@actions exp-list)])
          (with-syntax ([((a-n p-n) ...) @actions]
+		       [(sig ...) &signals]
 		       [(final-exp-list ...) exp-normalized-list])
 	   #`(begin
 	       (define name
 		 (case-lambda
 		   [(type) (cond
-			  [(eqv? 'shtml type) (lambda (args ...)
-					   `(final-exp-list ...))]
-			  [(eqv? 'event type) (lambda () (for-each
-						     (lambda (ac-pair)
-						       (let ([a-name (substring (symbol->string (car ac-pair)) 1)])
-							 (add-event-listener!
-							  (query-selector (format #f "[data-at-~a=\"~a\"]" a-name (procedure-name (cdr ac-pair))))
-							  a-name
-							  (procedure->external (cdr ac-pair)))))
-						     (list (cons 'a-n p-n) ...)))])])))))]
+			    [(eqv? 'shtml type)
+			     (lambda (args ...)
+			       `(final-exp-list ...))]
+			    [(eqv? 'event type)
+			     (lambda ()
+			       (for-each
+				(lambda (ac-pair)
+				  (let ([a-name (substring (symbol->string (car ac-pair)) 1)])
+				    (add-event-listener!
+				     (query-selector (format #f "[data-at-~a=\"~a\"]" a-name (procedure-name (cdr ac-pair))))
+				     a-name
+				     (procedure->external (cdr ac-pair)))))
+				(list (cons 'a-n p-n) ...))
+			       (signal-effect
+				(lambda ()
+				  (text-content
+				   (query-selector (format #f "[data-amper-~a]" 'sig))
+				   (any->string (signal-ref sig))))) ...
+			       )])])))))]
       [(exp ...) #'(exp ...)])))
 
 (define wisp-file->wish-file

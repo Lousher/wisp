@@ -1,9 +1,10 @@
 (define-module (signal)
-  #:use-module (srfi srfi-111)
+  #:use-module (hoot boxes)
   #:use-module (srfi srfi-9)
   #:export (signal-init
 	    signal-ref
 	    signal-set!
+	    define-signal
 	    signal-computed
 	    signal-effect))
 
@@ -17,20 +18,36 @@
 
 (define signal-init
   (lambda (value)
-    (make-signal (box value) '())))
+    (make-signal (make-box value) '())))
+
+(define-syntax define-signal
+  (syntax-rules ()
+    [(_ (name set-next) init)
+     (define-values (name set-next)
+       (values
+	(signal-init init)
+	(lambda (fn) (signal-next! name fn))))
+     ]))
 
 (define signal-ref
   (lambda (sig)
     (let ([cur (*CURRENT-EFFECT*)])
       (when cur
 	(signal-listeners-set! sig (cons cur (signal-listeners sig)))))
-    (unbox (signal-box sig))))
+    (box-ref (signal-box sig))))
 
+(define signal-next!
+  (lambda (sig fn)
+    (let ([sig-box (signal-box sig)]
+	  [sig-liss (signal-listeners sig)])
+      (box-set! sig-box (fn (signal-ref sig)))
+      (for-each (lambda (fn) (fn)) sig-liss))))
+		
 (define signal-set!
   (lambda (sig updated)
     (let ([sig-box (signal-box sig)]
 	  [sig-liss (signal-listeners sig)])
-      (set-box! sig-box updated)
+      (box-set! sig-box updated)
       (for-each (lambda (fn) (fn)) sig-liss))))
 
 (define signal-effect
