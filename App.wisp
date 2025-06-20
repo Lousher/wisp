@@ -1,11 +1,14 @@
 (define count 0)
 
 (define increment
-  (lambda () (set! count (+ count 1))))
+  (lambda (event) (set! count (+ count 1))))
+
+(define decrement
+  (lambda (event) (set! count (- count 1))))
     
 (define-component App
   (lambda ()
     `(div
-      (button (^ (@click ,increment)) "Minus")
+      (button (^ (@click decrement)) "Minus")
       (span ,count)
-      (button (^ (@click ,increment)) "Plus"))))
+      (button (^ (@click increment)) "Plus"))))

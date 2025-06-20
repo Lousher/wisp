@@ -12,6 +12,7 @@
   (lambda (name)
     `(define-module (,name)
        #:export (,name)
+       #:use-module (dom)
        #:use-module (htmlprag))))
 
 (define read-syntaxs
@@ -50,28 +51,63 @@
 	 (= 2 (length li))
 	 (eqv? #\@ (string-ref (object->string (car li)) 0)))))
 
+(define data-at-action-pair?
+  (lambda (li)
+    (and (pair? li)
+	 (= 2 (length li))
+	 (string? (car li))
+	 (string? (cadr li))
+	 (string-prefix? "data-at" (car li)))))
+
 (define find-@actions
   (lambda (li)
     (cond
      [(@action-pair? li) (list li)]
      [(pair? li)
       (apply append
-	     (list
-	      (find-@actions (car li))
-	      (find-@actions (cdr li))))]
+	     (list (find-@actions (car li))
+		   (find-@actions (cdr li))))]
      [else '()])))
+
+(define @action-pair->data-at-action
+  (lambda (acp)
+    (let ([@act-id (car acp)]
+	  [proc-name (cadr acp)])
+      (list (string->symbol (string-append "data-at-" (substring (symbol->string @act-id) 1)))
+	    (symbol->string proc-name)))))
+
+(define substitute-@actions
+  (lambda (li)
+    (cond
+     [(@action-pair? li) (@action-pair->data-at-action li)]
+     [(pair? li)
+      (cons (substitute-@actions (car li))
+	    (substitute-@actions (cdr li)))]
+     [else li])))
 
 (define wisp-syntax->wish-syntax
   (lambda (wisp-syntax)
     (syntax-case wisp-syntax ()
       [(define-component name (lambda (args ...) `(exp ...)))
        (let* ([exp-list (syntax->datum #'(exp ...))]
+	      [exp-normalized-list (substitute-@actions exp-list)]
 	      [@actions (find-@actions exp-list)])
-	 #`(begin
-	     (define name
-	       (lambda (args ...)
-		 `(exp ...)))
-	     ))]
+         (with-syntax ([((a-n p-n) ...) @actions]
+		       [(final-exp-list ...) exp-normalized-list])
+	   #`(begin
+	       (define name
+		 (case-lambda
+		   [(type) (cond
+			  [(eqv? 'shtml type) (lambda (args ...)
+					   `(final-exp-list ...))]
+			  [(eqv? 'event type) (lambda () (for-each
+						     (lambda (ac-pair)
+						       (let ([a-name (substring (symbol->string (car ac-pair)) 1)])
+							 (add-event-listener!
+							  (query-selector (format #f "[data-at-~a=\"~a\"]" a-name (procedure-name (cdr ac-pair))))
+							  a-name
+							  (procedure->external (cdr ac-pair)))))
+						     (list (cons 'a-n p-n) ...)))])])))))]
       [(exp ...) #'(exp ...)])))
 
 (define wisp-file->wish-file

@@ -5,8 +5,13 @@
 	    console-log
 	    add-event-listener!
 	    text-content
+	    query-selector
 	    get-element-by-id
 	    insert-adjacent-HTML))
+
+(define-foreign query-selector
+  "document" "querySelector"
+  (ref string) -> (ref null extern))
 
 (define-foreign document-body
   "document" "body"
