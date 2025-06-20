@@ -5,6 +5,4 @@
 (insert-adjacent-HTML
  (get-element-by-id "app")
  "beforeEnd"
- (shtml->html (shtml-normalize ((App 'shtml)))))
-
-((App 'event))
+ (shtml->html (shtml-normalize (App))))
