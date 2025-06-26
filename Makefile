@@ -19,7 +19,9 @@ $(DIST_DIR)/%.scm: %.wisp setup-dist
 
 setup-dist:
 	@mkdir -p $(DIST_DIR)
+	@mkdir -p $(DIST_DIR)/assets
 	@cp -r $(TEMPLATE)/ $(DIST_DIR)/
+	@cp -r assets/ $(DIST_DIR)/assets/
 	
 
 clean:
