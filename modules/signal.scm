@@ -4,6 +4,7 @@
   #:export (signal-init
 	    signal-ref
 	    signal-set!
+	    signal?
 	    define-signal
 	    signal-computed
 	    signal-effect))
@@ -54,6 +55,7 @@
   (lambda (fn)
     (parameterize ([*CURRENT-EFFECT* fn])
       (fn))))
+
 
 (define signal-computed
   (lambda (fn)

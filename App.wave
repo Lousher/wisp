@@ -1,5 +1,0 @@
-(use-modules (dom) (htmlprag) (signal))
-(define-signal (count next) 114514)
-(define increment (lambda (event) (next #{1+}#)))
-(define decrement (lambda (event) (next #{1-}#)))
-(define reset (lambda (event) (next (lambda (c) 0))))
