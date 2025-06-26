@@ -1,15 +1,17 @@
 (define-module (App)
   #:export (App)
-  #:use-module (Span)
+  #:use-module (TaskList)
+  #:use-module (dom)
   #:use-module (signal))
 
-(define-signal (count set-next-count) 0)
-(define inc (lambda (event) (set-next-count 1+)))
-(define dec (lambda (event) (set-next-count 1-)))
+(define-signal (tasks set-tasks-next) '("Old Task 1"))
+(define add-task (lambda (event)
+		   (set-tasks-next (lambda (tasks) (cons "new Task 1" tasks)))))
 
 (define App
   (lambda ()
     `(section
-      (button (^ (@click ,dec)) "Minus")
-      ,(Span count)
-      (button (^ (@click ,inc)) "Plus"))))
+      (button (^ (@click ,add-task)) "Add New Task")
+      ,(TaskList tasks)
+      )))
+

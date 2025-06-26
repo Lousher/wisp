@@ -18,6 +18,10 @@
     (if (string? item) item
 	(object->string item))))
 
+(define @map?
+  (lambda (sym)
+    (and (symbol? sym)
+	 (eqv? '@map sym))))
 
 (define shtml-parse
   (lambda (exp)
@@ -27,11 +31,20 @@
 	 (signal-effect (lambda () (text-content anchor (any->string (signal-ref sig)))))))
       ((? string? str)
        (lambda (anchor) (text-content anchor str)))
+      (((? @map? op) (? procedure? proc) (? signal? sig-list))
+       (lambda (anchor)
+	 (signal-effect
+	  (lambda ()
+	    (let* ([sig-v (signal-ref sig-list)]
+		   [items (map proc sig-v)])
+	      (inner-HTML anchor "")
+	      (for-each
+	       (lambda (item) ((shtml-parse item) anchor)) items))))))
       (((? symbol? tag) . body)
        (let ([elem (create-element (symbol->string tag))])
 	 (define add-childern!
 	   (lambda (children)
-	       (for-each (lambda (child) ((shtml-parse child) elem)) children)))
+	     (for-each (lambda (child) ((shtml-parse child) elem)) children)))
 	 (match body
 	   ((('^ . attrs) . children)
 	    (for-each (lambda (attr) (match attr

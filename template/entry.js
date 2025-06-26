@@ -9,6 +9,8 @@ window.addEventListener('load', function () {
 	createTextNode: Document.prototype.createTextNode.bind(document),
       },
       element: {
+	innerHTML: (e, htmlstr) => e.innerHTML = htmlstr,
+	replaceChildren(e, c) { e.replaceChildren(c); },
 	setAttribute(e, n, v) { e.setAttribute(n, v); },
 	appendChild(parent, child) { return parent.appendChild(child); },
 	insertAdjacentHTML(e, type, html) { return e.insertAdjacentHTML(type, html); },

@@ -4,8 +4,10 @@
   #:export (document-body
 	    console-log
 	    add-event-listener!
+	    replace-children
 	    create-text-node
 	    text-content
+	    inner-HTML
 	    query-selector
 	    get-element-by-id
 	    create-element
@@ -13,6 +15,14 @@
 	    append-child!
 	    insert-adjacent-element
 	    insert-adjacent-HTML))
+
+(define-foreign inner-HTML
+  "element" "innerHTML"
+  (ref null extern) (ref string) -> none)
+
+(define-foreign replace-children
+  "element" "replaceChildren"
+  (ref null extern) (ref null extern) -> none)
 
 (define-foreign set-attribute!
   "element" "setAttribute"
