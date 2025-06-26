@@ -38,8 +38,9 @@
 				       (((? @action-symbol? act-name) (? procedure? proc))
 					(add-event-listener! elem (@action-name act-name) (procedure->external proc)))
 				       (((? symbol? attr-name) (? string? attr-value))
-					(set-attribute! elem (symbol->string attr-name) attr-value))))
-
+					(set-attribute! elem (symbol->string attr-name) attr-value))
+				       (((? symbol? attr-name) (? signal? attr-sig))
+					(signal-effect (lambda () (set-attribute! elem (symbol->string attr-name) (any->string (signal-ref attr-sig))))))))
 		      attrs)
 	    (add-childern! children))
 	   (pure-children (add-childern! pure-children)))
