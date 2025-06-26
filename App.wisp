@@ -1,5 +1,6 @@
 (define-module (App)
   #:export (App)
+  #:use-module (Span)
   #:use-module (signal))
 
 (define-signal (count set-next-count) 0)
@@ -7,7 +8,8 @@
 (define dec (lambda (event) (set-next-count 1-)))
 
 (define App
-  `(section
-    (button (^ (@click ,dec)) "Minus")
-    (h2 ,count)
-    (button (^ (@click ,inc)) "Plus")))
+  (lambda ()
+    `(section
+      (button (^ (@click ,dec)) "Minus")
+      ,(Span count)
+      (button (^ (@click ,inc)) "Plus"))))
