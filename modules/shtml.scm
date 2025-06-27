@@ -23,6 +23,11 @@
     (and (symbol? sym)
 	 (eqv? '@map sym))))
 
+(define symbol-empty?
+  (lambda (sym)
+    (and (symbol? sym)
+	 (eqv? 'empty? sym))))
+
 (define shtml-parse
   (lambda (exp)
     (match exp
@@ -40,6 +45,9 @@
 	      (inner-HTML anchor "")
 	      (for-each
 	       (lambda (item) ((shtml-parse item) anchor)) items))))))
+      (((? symbol-empty? tag) . children)
+       (lambda (anchor)
+	 (for-each (lambda (child) ((shtml-parse child) anchor)) children)))
       (((? symbol? tag) . body)
        (let ([elem (create-element (symbol->string tag))])
 	 (define add-childern!
