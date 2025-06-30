@@ -1,10 +1,8 @@
 (use-modules (App) (shtml) (cssom) (dom))
 
-((shtml-parse (App)) (get-element-by-id "app"))
 
-(let ([s (create-css-style-sheet '())])
-  (insert-rule s ".w-40 { height: 40 rem; background-color: blue; }")
-  (document-adopted-style-sheets s))
-
-
+(parameterize
+    ([CSS_STYLE_SHEET (create-css-style-sheet '())])
+  (document-adopted-style-sheets (CSS_STYLE_SHEET))
+  ((shtml-parse (App)) (get-element-by-id "app")))
 
