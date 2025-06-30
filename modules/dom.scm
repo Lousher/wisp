@@ -11,10 +11,25 @@
 	    query-selector
 	    get-element-by-id
 	    create-element
+	    document-adopted-style-sheets
 	    set-attribute!
 	    append-child!
+	    target-value
+	    event-target
 	    insert-adjacent-element
 	    insert-adjacent-HTML))
+
+(define-foreign document-adopted-style-sheets
+  "document" "adoptedStyleSheets"
+  (ref null extern) -> none)
+
+(define-foreign target-value
+  "target" "value"
+  (ref null extern) -> (ref string))
+
+(define-foreign event-target
+  "event" "target"
+  (ref null extern) -> (ref null extern))
 
 (define-foreign inner-HTML
   "element" "innerHTML"

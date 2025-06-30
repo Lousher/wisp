@@ -7,6 +7,7 @@ window.addEventListener('load', function () {
 	querySelector: Document.prototype.querySelector.bind(document),
 	createElement: Document.prototype.createElement.bind(document),
 	createTextNode: Document.prototype.createTextNode.bind(document),
+	adoptedStyleSheets: (sheet) => { document.adoptedStyleSheets = [sheet]; },
       },
       element: {
 	innerHTML: (e, htmlstr) => e.innerHTML = htmlstr,
@@ -20,6 +21,16 @@ window.addEventListener('load', function () {
       },
       console: {
 	log: (e) => console.log(e)
+      },
+      cssom: {
+	CSSStyleSheet: (any) => { return new CSSStyleSheet(); },
+	insertRule(css, style) { return css.insertRule(style); },
+      },
+      event: {
+	target(ev) { return ev.target; },
+      },
+      target: {
+	value(tr) { return tr.value; },
       }
     }
   })})
