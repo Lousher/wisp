@@ -1,6 +1,5 @@
 (define-module (shtml)
   #:export (shtml-parse)
-  #:use-module (scss)
   #:use-module (cssom)
   #:use-module (ice-9 match)
   #:use-module (signal)
@@ -35,21 +34,12 @@
     (and (symbol? sym)
 	 (eqv? 'class sym))))
 
-(define scss-parse
-  (lambda (scss-attr-values)
-    (let ([scss-attrs (string-split scss-attr-values #\space)])
-      (for-each (lambda (scss-attr)
-		  (let ([css-style (scss-attribute->css-style scss-attr)])
-		    (insert-rule (CSS_STYLE_SHEET) css-style)))
-		scss-attrs))))
-
 (define attribute-parse
   (lambda (elem attr)
     (match attr
       (((? @action-symbol? act-name) (? procedure? proc))
        (add-event-listener! elem (@action-name act-name) (procedure->external proc)))
       (((? class-symbol? class-attr) (? string? scss-attr-values))
-       (scss-parse scss-attr-values)
        (set-attribute! elem (symbol->string class-attr) scss-attr-values))
       (((? symbol? attr-name) (? string? attr-value))
        (set-attribute! elem (symbol->string attr-name) attr-value))
@@ -90,5 +80,3 @@
 	    (add-childern! children))
 	   (pure-children (add-childern! pure-children)))
 	 (lambda (anchor) (append-child! anchor elem)))))))
-
-
