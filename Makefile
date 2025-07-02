@@ -1,6 +1,6 @@
 .PHONY: clean all
 
-DIST_DIR := dist
+DIST_DIR := doc
 MODULES := modules
 TEMPLATE := template
 MAIN_WASM := main.wasm
