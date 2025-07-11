@@ -17,4 +17,3 @@ effect(() => count.textContent= num());
 document.body.appendChild(dec);
 document.body.appendChild(count);
 document.body.appendChild(inc);
-
